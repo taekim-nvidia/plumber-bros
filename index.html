@@ -1389,41 +1389,115 @@
   }
 
   function drawGoomba(e) {
+    // Classic Goomba: mushroom-shaped, brown cap on top, lighter face below,
+    // angry V eyebrows, fang teeth, two little feet right under the body.
     const x = e.x, y = e.y, w = e.w, h = e.h;
+
     if (e.squished) {
-      ctx.fillStyle = '#7a3a1a';
-      ctx.fillRect(x, y + h - 8, w, 8);
+      // Squished: flattened cap with eyes peeking out
+      const flatH = 10;
+      const yy = y + h - flatH;
+      // Cap dark brown
+      ctx.fillStyle = '#5a2a08';
+      ctx.beginPath();
+      ctx.ellipse(x + w / 2, yy + 3, w / 2 + 2, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Light face strip
+      ctx.fillStyle = '#d8a868';
+      ctx.fillRect(x + 4, yy + 5, w - 8, 4);
+      // X eyes
       ctx.fillStyle = '#000';
-      ctx.fillRect(x + 6, y + h - 6, 4, 2);
-      ctx.fillRect(x + w - 10, y + h - 6, 4, 2);
+      ctx.font = 'bold 7px monospace';
+      ctx.fillText('><', x + 5, yy + 9);
+      ctx.fillText('><', x + w - 14, yy + 9);
       return;
     }
-    // Body
-    ctx.fillStyle = '#a8682a';
+
+    const cx = x + w / 2;
+    // ===== CAP (top half, wider, dark brown) =====
+    // Big rounded mushroom cap
+    ctx.fillStyle = '#7a3008';
     ctx.beginPath();
-    ctx.ellipse(x + w / 2, y + h / 2 + 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+    // semi-ellipse for cap dome
+    ctx.ellipse(cx, y + h * 0.35, w / 2 + 1, h * 0.35, 0, Math.PI, Math.PI * 2);
     ctx.fill();
-    // Head darker top
-    ctx.fillStyle = '#7a3a1a';
+    // Cap underside (bit darker line)
+    ctx.fillStyle = '#5a1f04';
+    ctx.fillRect(x - 1, y + h * 0.42, w + 2, 2);
+
+    // ===== FACE (light tan, narrower than cap) =====
+    ctx.fillStyle = '#d8a868';
+    // Trapezoid-ish face
     ctx.beginPath();
-    ctx.ellipse(x + w / 2, y + h / 2 - 4, w / 2 - 2, h / 3, 0, 0, Math.PI * 2);
+    ctx.moveTo(x + 3, y + h * 0.44);
+    ctx.lineTo(x + w - 3, y + h * 0.44);
+    ctx.lineTo(x + w - 4, y + h * 0.85);
+    ctx.lineTo(x + 4, y + h * 0.85);
+    ctx.closePath();
     ctx.fill();
-    // Eyes
+
+    // ===== EYEBROWS (angry V — thick black) =====
+    // Left eyebrow slants down-right
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.moveTo(x + 3, y + h * 0.46);
+    ctx.lineTo(x + 11, y + h * 0.52);
+    ctx.lineTo(x + 11, y + h * 0.56);
+    ctx.lineTo(x + 3, y + h * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    // Right eyebrow slants down-left
+    ctx.beginPath();
+    ctx.moveTo(x + w - 3, y + h * 0.46);
+    ctx.lineTo(x + w - 11, y + h * 0.52);
+    ctx.lineTo(x + w - 11, y + h * 0.56);
+    ctx.lineTo(x + w - 3, y + h * 0.5);
+    ctx.closePath();
+    ctx.fill();
+
+    // ===== EYES (white circles under brows, small black pupil) =====
     ctx.fillStyle = '#fff';
-    ctx.fillRect(x + 6, y + 10, 5, 7);
-    ctx.fillRect(x + w - 11, y + 10, 5, 7);
+    // Left eye
+    ctx.beginPath();
+    ctx.arc(x + 7, y + h * 0.58, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Right eye
+    ctx.beginPath();
+    ctx.arc(x + w - 7, y + h * 0.58, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // Pupils — looking forward (toward player would be classic but stick to forward)
     ctx.fillStyle = '#000';
-    ctx.fillRect(x + 8, y + 12, 2, 4);
-    ctx.fillRect(x + w - 9, y + 12, 2, 4);
-    // Eyebrows (angry)
+    ctx.beginPath(); ctx.arc(x + 7, y + h * 0.58, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + w - 7, y + h * 0.58, 1.5, 0, Math.PI * 2); ctx.fill();
+
+    // ===== MOUTH with FANGS =====
+    // Mouth line
     ctx.fillStyle = '#000';
-    ctx.fillRect(x + 4, y + 8, 8, 2);
-    ctx.fillRect(x + w - 12, y + 8, 8, 2);
-    // Feet (alternating)
+    ctx.fillRect(x + 8, y + h * 0.74, w - 16, 1);
+    // Tiny white fangs
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x + 9, y + h * 0.74, 2, 2);
+    ctx.fillRect(x + w - 11, y + h * 0.74, 2, 2);
+
+    // ===== FEET (two stubby brown feet, alternating step) =====
     const step = Math.sin(e.anim) > 0 ? 0 : 1;
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(x + 2, y + h - 4, 8, 4);
-    ctx.fillRect(x + w - 10, y + h - 4 + (step ? -1 : 1), 8, 4);
+    ctx.fillStyle = '#3a1a00';
+    // Left foot (slightly raised on step)
+    const lfy = y + h - 5 + (step ? -2 : 0);
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.28, lfy + 2, 6, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Right foot
+    const rfy = y + h - 5 + (step ? 0 : -2);
+    ctx.beginPath();
+    ctx.ellipse(x + w * 0.72, rfy + 2, 6, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Small shadow under feet
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(cx, y + h - 1, w / 2 - 2, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   function drawPlayer(p) {
