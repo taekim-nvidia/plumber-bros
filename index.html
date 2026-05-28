@@ -1503,16 +1503,24 @@
     ctx.fillRect(6, 12, 1, 2);   // ear shadow
     ctx.fillRect(21, 12, 1, 2);
 
-    // ===== EYE =====
-    // Single big eye, facing right (other side hidden by perspective)
+    // ===== EYES — two eyes (3/4 view) =====
+    // Left eye (slightly smaller, partly turned away)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(9, 10, 3, 5);
+    ctx.fillStyle = '#3060c0';
+    ctx.fillRect(10, 11, 2, 3);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(10, 12, 1, 2);
+    // Right eye (forward-facing, bigger)
     ctx.fillStyle = '#fff';
     ctx.fillRect(16, 10, 4, 5);
-    ctx.fillStyle = '#3060c0';   // iris (blue)
+    ctx.fillStyle = '#3060c0';
     ctx.fillRect(17, 11, 2, 3);
-    ctx.fillStyle = '#000';      // pupil
-    ctx.fillRect(18, 12, 1, 2);
-    // Eyebrow (thick black)
     ctx.fillStyle = '#000';
+    ctx.fillRect(18, 12, 1, 2);
+    // Eyebrows (thick black) — one for each eye
+    ctx.fillStyle = '#000';
+    ctx.fillRect(8, 9, 5, 2);
     ctx.fillRect(15, 9, 6, 2);
 
     // ===== NOSE — BIG ROUND =====
