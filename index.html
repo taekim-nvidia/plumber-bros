@@ -1414,70 +1414,70 @@
     }
 
     const cx = x + w / 2;
-    // ===== CAP (top half, wider, dark brown) =====
-    // Big rounded mushroom cap
+
+    // ===== ONE CONTINUOUS MUSHROOM SILHOUETTE — no gap between cap and body =====
+    // Dark brown base shape: rounded top, slightly tapered bottom, like a stout mushroom
     ctx.fillStyle = '#7a3008';
     ctx.beginPath();
-    // semi-ellipse for cap dome
-    ctx.ellipse(cx, y + h * 0.35, w / 2 + 1, h * 0.35, 0, Math.PI, Math.PI * 2);
+    ctx.moveTo(x + 3, y + h * 0.85);          // bottom-left
+    ctx.lineTo(x + 1, y + h * 0.5);           // up the left side
+    ctx.quadraticCurveTo(x, y, cx, y);        // round over the top-left of cap
+    ctx.quadraticCurveTo(x + w, y, x + w - 1, y + h * 0.5);  // round over top-right
+    ctx.lineTo(x + w - 3, y + h * 0.85);      // down the right side
+    ctx.closePath();
     ctx.fill();
-    // Cap underside (bit darker line)
-    ctx.fillStyle = '#5a1f04';
-    ctx.fillRect(x - 1, y + h * 0.42, w + 2, 2);
 
-    // ===== FACE (light tan, narrower than cap) =====
+    // ===== LIGHTER FACE PATCH (lower portion of body, overlapping the dark base) =====
     ctx.fillStyle = '#d8a868';
-    // Trapezoid-ish face
     ctx.beginPath();
-    ctx.moveTo(x + 3, y + h * 0.44);
-    ctx.lineTo(x + w - 3, y + h * 0.44);
-    ctx.lineTo(x + w - 4, y + h * 0.85);
-    ctx.lineTo(x + 4, y + h * 0.85);
+    ctx.moveTo(x + 4, y + h * 0.5);           // tucked just under the cap dome
+    ctx.lineTo(x + w - 4, y + h * 0.5);
+    ctx.lineTo(x + w - 5, y + h * 0.85);
+    ctx.lineTo(x + 5, y + h * 0.85);
     ctx.closePath();
     ctx.fill();
 
-    // ===== EYEBROWS (angry V — thick black) =====
-    // Left eyebrow slants down-right
+    // ===== UNDERSIDE OF CAP — dark rim where cap meets face =====
+    ctx.fillStyle = '#3a1a00';
+    ctx.fillRect(x + 4, y + h * 0.5 - 1, w - 8, 2);
+
+    // ===== ANGRY V EYEBROWS (touch the cap rim above) =====
     ctx.fillStyle = '#000';
+    // Left brow — slants down toward center
     ctx.beginPath();
-    ctx.moveTo(x + 3, y + h * 0.46);
-    ctx.lineTo(x + 11, y + h * 0.52);
-    ctx.lineTo(x + 11, y + h * 0.56);
-    ctx.lineTo(x + 3, y + h * 0.5);
+    ctx.moveTo(x + 3, y + h * 0.5);
+    ctx.lineTo(x + 12, y + h * 0.58);
+    ctx.lineTo(x + 12, y + h * 0.62);
+    ctx.lineTo(x + 3, y + h * 0.54);
     ctx.closePath();
     ctx.fill();
-    // Right eyebrow slants down-left
+    // Right brow
     ctx.beginPath();
-    ctx.moveTo(x + w - 3, y + h * 0.46);
-    ctx.lineTo(x + w - 11, y + h * 0.52);
-    ctx.lineTo(x + w - 11, y + h * 0.56);
-    ctx.lineTo(x + w - 3, y + h * 0.5);
+    ctx.moveTo(x + w - 3, y + h * 0.5);
+    ctx.lineTo(x + w - 12, y + h * 0.58);
+    ctx.lineTo(x + w - 12, y + h * 0.62);
+    ctx.lineTo(x + w - 3, y + h * 0.54);
     ctx.closePath();
     ctx.fill();
 
-    // ===== EYES (white circles under brows, small black pupil) =====
+    // ===== EYES =====
     ctx.fillStyle = '#fff';
-    // Left eye
     ctx.beginPath();
-    ctx.arc(x + 7, y + h * 0.58, 3, 0, Math.PI * 2);
+    ctx.arc(x + 8, y + h * 0.66, 3, 0, Math.PI * 2);
     ctx.fill();
-    // Right eye
     ctx.beginPath();
-    ctx.arc(x + w - 7, y + h * 0.58, 3, 0, Math.PI * 2);
+    ctx.arc(x + w - 8, y + h * 0.66, 3, 0, Math.PI * 2);
     ctx.fill();
-    // Pupils — looking forward (toward player would be classic but stick to forward)
     ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.arc(x + 7, y + h * 0.58, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + w - 7, y + h * 0.58, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 8, y + h * 0.66, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + w - 8, y + h * 0.66, 1.5, 0, Math.PI * 2); ctx.fill();
 
     // ===== MOUTH with FANGS =====
-    // Mouth line
     ctx.fillStyle = '#000';
-    ctx.fillRect(x + 8, y + h * 0.74, w - 16, 1);
-    // Tiny white fangs
+    ctx.fillRect(x + 8, y + h * 0.78, w - 16, 1);
     ctx.fillStyle = '#fff';
-    ctx.fillRect(x + 9, y + h * 0.74, 2, 2);
-    ctx.fillRect(x + w - 11, y + h * 0.74, 2, 2);
+    ctx.fillRect(x + 9, y + h * 0.78, 2, 2);
+    ctx.fillRect(x + w - 11, y + h * 0.78, 2, 2);
 
     // ===== FEET (two stubby brown feet, alternating step) =====
     const step = Math.sin(e.anim) > 0 ? 0 : 1;
