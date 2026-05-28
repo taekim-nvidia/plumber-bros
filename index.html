@@ -767,8 +767,9 @@
       collideY(p);
       p.anim += 0.2;
       // Camera doesn't move further than level edge
-      const camTarget = p.x - canvas.width / 2;
-      game.cameraX = Math.max(0, Math.min(camTarget, LEVEL_W * TILE - canvas.width));
+      const viewW = window.innerWidth;
+      const camTarget = p.x - viewW / 2;
+      game.cameraX = Math.max(0, Math.min(camTarget, LEVEL_W * TILE - viewW));
       return;
     }
 
@@ -888,14 +889,18 @@
       if (pa.life <= 0) game.particles.splice(i, 1);
     }
 
-    // Camera
-    const camTarget = p.x - canvas.width / 2 + p.w / 2;
-    // Smooth follow with right-only progression (camera doesn't go backward — classic Mario rule)
-    if (camTarget > game.cameraX) game.cameraX = camTarget;
-    if (game.cameraX < 0) game.cameraX = 0;
-    if (game.cameraX > LEVEL_W * TILE - canvas.width) {
-      game.cameraX = LEVEL_W * TILE - canvas.width;
+    // Camera — work in CSS pixels (window.innerWidth), NOT canvas.width (which is physical*DPR)
+    const viewW = window.innerWidth;
+    // Lead-the-player a bit so you can see what's ahead
+    const targetCam = p.x + p.w / 2 - viewW * 0.4;
+    // Right-only progression (classic platformer rule — camera doesn't reverse)
+    if (targetCam > game.cameraX) {
+      // Smooth follow
+      game.cameraX += (targetCam - game.cameraX) * 0.15;
     }
+    if (game.cameraX < 0) game.cameraX = 0;
+    const maxCam = Math.max(0, LEVEL_W * TILE - viewW);
+    if (game.cameraX > maxCam) game.cameraX = maxCam;
   }
 
   function collideX(p) {
