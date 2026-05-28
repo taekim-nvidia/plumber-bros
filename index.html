@@ -602,7 +602,7 @@
       x: 2 * TILE,
       y: 10 * TILE,
       vx: 0, vy: 0,
-      w: 24, h: 28,
+      w: 24, h: 30,
       facing: 1,
       onGround: false,
       jumping: false,
@@ -1427,6 +1427,7 @@
   }
 
   function drawPlayer(p) {
+    // Player sprite — designed at 28×40 logical pixels, scaled to actual size
     const x = p.x, y = p.y, w = p.w, h = p.h;
     ctx.save();
     if (p.facing < 0) {
@@ -1435,72 +1436,189 @@
     } else {
       ctx.translate(x, y);
     }
-    // Blink during invuln
+    // Scale our 28×40 art-space to actual sprite size
+    const SW = 28, SH = 40;
+    ctx.scale(w / SW, h / SH);
+
     if (p.invuln > 0 && Math.floor(p.invuln / 4) % 2 === 0) {
       ctx.globalAlpha = 0.4;
     }
+
     if (p.dead) {
-      // X eyes, falling pose
-      ctx.fillStyle = '#cc3333';
-      ctx.fillRect(2, 4, w - 4, h - 6);  // body
-      ctx.fillStyle = '#f4d8c0';
-      ctx.fillRect(4, 0, w - 8, 10);     // head
+      // Falling: head down, X eyes
+      ctx.fillStyle = '#cc1818';
+      ctx.fillRect(6, 0, 16, 8);
+      ctx.fillStyle = '#fdbfa1';
+      ctx.fillRect(6, 8, 16, 12);
+      ctx.fillStyle = '#3a1a08';
+      ctx.fillRect(8, 14, 12, 3);
       ctx.fillStyle = '#000';
-      ctx.font = 'bold 10px monospace';
-      ctx.fillText('X', 6, 8);
-      ctx.fillText('X', w - 12, 8);
+      ctx.font = 'bold 8px monospace';
+      ctx.fillText('X', 9, 13);
+      ctx.fillText('X', 17, 13);
+      ctx.fillStyle = '#1a4ac0';
+      ctx.fillRect(4, 20, 20, 14);
+      ctx.fillStyle = '#5a2a08';
+      ctx.fillRect(2, 34, 24, 6);
+      ctx.globalAlpha = 1;
       ctx.restore();
       return;
     }
 
-    // Cap (red)
-    ctx.fillStyle = '#cc3333';
-    ctx.fillRect(3, 0, w - 6, 6);
-    ctx.fillRect(0, 4, w, 4);
-    // Cap visor
-    ctx.fillStyle = '#aa2222';
-    ctx.fillRect(w - 8, 4, 8, 4);
-    // Face
-    ctx.fillStyle = '#f4d8c0';
-    ctx.fillRect(4, 8, w - 8, 8);
-    // Mustache
-    ctx.fillStyle = '#5a2a08';
-    ctx.fillRect(6, 13, w - 12, 3);
-    // Eye
+    // ===== CAP (red with M logo) =====
+    // Cap top dome
+    ctx.fillStyle = '#d81818';
+    ctx.fillRect(7, 0, 14, 4);    // top of cap
+    ctx.fillRect(5, 2, 18, 4);    // wider band
+    ctx.fillRect(3, 4, 22, 4);    // brim level
+    // Cap visor (sticks forward)
+    ctx.fillStyle = '#a01010';
+    ctx.fillRect(15, 6, 10, 3);
+    // White circle on cap with M
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(12, 5, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#d81818';
+    ctx.font = 'bold 7px Arial';
+    ctx.fillText('M', 9, 8);
+
+    // ===== HAIR — sideburns peeking out =====
+    ctx.fillStyle = '#3a1a08';
+    ctx.fillRect(5, 8, 3, 6);    // left sideburn
+    ctx.fillRect(20, 8, 3, 6);   // right sideburn (will be flipped for facing)
+    // Back hair tuft under cap
+    ctx.fillRect(4, 7, 2, 3);
+
+    // ===== FACE =====
+    ctx.fillStyle = '#fdbfa1';   // skin
+    ctx.fillRect(7, 8, 14, 12);  // main face
+    ctx.fillRect(8, 20, 12, 2);  // chin
+
+    // ===== EARS =====
+    ctx.fillStyle = '#fdbfa1';
+    ctx.fillRect(5, 11, 2, 4);   // left ear
+    ctx.fillRect(21, 11, 2, 4);  // right ear
+    ctx.fillStyle = '#d8a890';
+    ctx.fillRect(6, 12, 1, 2);   // ear shadow
+    ctx.fillRect(21, 12, 1, 2);
+
+    // ===== EYE =====
+    // Single big eye, facing right (other side hidden by perspective)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(16, 10, 4, 5);
+    ctx.fillStyle = '#3060c0';   // iris (blue)
+    ctx.fillRect(17, 11, 2, 3);
+    ctx.fillStyle = '#000';      // pupil
+    ctx.fillRect(18, 12, 1, 2);
+    // Eyebrow (thick black)
     ctx.fillStyle = '#000';
-    ctx.fillRect(w - 9, 10, 2, 2);
-    // Body — overalls (blue)
-    ctx.fillStyle = '#3344cc';
-    ctx.fillRect(2, 16, w - 4, h - 20);
-    // Shirt (red sleeves)
-    ctx.fillStyle = '#cc3333';
-    ctx.fillRect(0, 16, 4, 8);
-    ctx.fillRect(w - 4, 16, 4, 8);
-    // Buttons
+    ctx.fillRect(15, 9, 6, 2);
+
+    // ===== NOSE — BIG ROUND =====
+    ctx.fillStyle = '#fdbfa1';
+    // round bulb
+    ctx.beginPath();
+    ctx.arc(13, 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // nose shadow
+    ctx.fillStyle = '#d89870';
+    ctx.fillRect(11, 15, 1, 1);
+    ctx.fillRect(14, 15, 1, 1);
+
+    // ===== MUSTACHE — thick curled =====
+    ctx.fillStyle = '#000';
+    // main bar under nose
+    ctx.fillRect(7, 16, 15, 3);
+    // upper edge follows nose curve
+    ctx.fillRect(9, 15, 11, 1);
+    // curl ends — left side
+    ctx.fillRect(6, 17, 2, 2);
+    ctx.fillRect(5, 18, 2, 2);
+    // curl ends — right side
+    ctx.fillRect(22, 17, 2, 2);
+    ctx.fillRect(23, 18, 2, 2);
+    // tiny mouth visible between mustache ends
+    ctx.fillStyle = '#8a3030';
+    ctx.fillRect(13, 19, 3, 1);
+
+    // ===== NECK =====
+    ctx.fillStyle = '#fdbfa1';
+    ctx.fillRect(10, 21, 8, 2);
+
+    // ===== SHIRT (red sleeves + collar) =====
+    ctx.fillStyle = '#d81818';
+    ctx.fillRect(4, 22, 20, 6);   // shoulders
+    // arms (will be drawn below)
+
+    // ===== OVERALLS (blue body) =====
+    ctx.fillStyle = '#1a4ac0';
+    ctx.fillRect(7, 23, 14, 12);  // overall body
+    // shoulder straps
+    ctx.fillStyle = '#1a4ac0';
+    ctx.fillRect(9, 21, 3, 3);
+    ctx.fillRect(16, 21, 3, 3);
+    // yellow buttons on straps
     ctx.fillStyle = '#ffd23f';
-    ctx.fillRect(6, 19, 2, 2);
-    ctx.fillRect(w - 8, 19, 2, 2);
-    // Hands
+    ctx.beginPath(); ctx.arc(10, 25, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(17, 25, 1.5, 0, Math.PI * 2); ctx.fill();
+    // belt area shadow
+    ctx.fillStyle = '#0a3090';
+    ctx.fillRect(7, 28, 14, 1);
+
+    // ===== ARMS / HANDS =====
+    // Sleeve
+    ctx.fillStyle = '#d81818';
+    const armSwing = p.jumping ? -6 : Math.sin(p.anim) * 2;
+    const armSwingBack = p.jumping ? -6 : -Math.sin(p.anim) * 2;
+    ctx.fillRect(2, 22, 3, 6);    // back arm (left when facing right)
+    ctx.fillRect(23, 22, 3, 6);   // front arm
+    // White gloves
     ctx.fillStyle = '#fff';
     if (p.jumping) {
-      // arms up
-      ctx.fillRect(-2, 14, 4, 5);
-      ctx.fillRect(w - 2, 14, 4, 5);
+      // both raised
+      ctx.fillRect(1, 18, 4, 4);
+      ctx.fillRect(23, 18, 4, 4);
     } else {
-      const swing = Math.sin(p.anim) * 2;
-      ctx.fillRect(-2, 20 + swing, 4, 4);
-      ctx.fillRect(w - 2, 20 - swing, 4, 4);
+      ctx.fillRect(1, 28 + armSwingBack, 4, 4);
+      ctx.fillRect(23, 28 + armSwing, 4, 4);
     }
-    // Shoes — alternating step
-    ctx.fillStyle = '#5a2a08';
+    // Glove outline
+    ctx.fillStyle = '#cccccc';
     if (p.jumping) {
-      ctx.fillRect(2, h - 4, w / 2 - 2, 4);
-      ctx.fillRect(w / 2, h - 4, w / 2 - 2, 4);
+      ctx.fillRect(1, 21, 4, 1);
+      ctx.fillRect(23, 21, 4, 1);
     } else {
-      const step = Math.sin(p.anim) > 0 ? 0 : 1;
-      ctx.fillRect(2 + step * 4, h - 4, w / 2 - 4, 4);
-      ctx.fillRect(w / 2 + (1 - step) * 4, h - 4, w / 2 - 4, 4);
+      ctx.fillRect(1, 31 + armSwingBack, 4, 1);
+      ctx.fillRect(23, 31 + armSwing, 4, 1);
     }
+
+    // ===== LEGS / SHOES =====
+    const step = Math.sin(p.anim) > 0 ? 0 : 1;
+    if (p.jumping) {
+      // tucked legs
+      ctx.fillStyle = '#1a4ac0';
+      ctx.fillRect(8, 33, 5, 4);
+      ctx.fillRect(15, 33, 5, 4);
+      // brown shoes
+      ctx.fillStyle = '#5a2a08';
+      ctx.fillRect(6, 36, 8, 4);
+      ctx.fillRect(14, 36, 8, 4);
+    } else {
+      // legs visible (blue overalls bottom)
+      ctx.fillStyle = '#1a4ac0';
+      ctx.fillRect(8 + step * 1, 33, 5, 3);
+      ctx.fillRect(15 - step * 1, 33, 5, 3);
+      // shoes — brown, alternating forward step
+      ctx.fillStyle = '#5a2a08';
+      ctx.fillRect(5 + step * 2, 36, 9, 4);
+      ctx.fillRect(14 + (1 - step) * 2, 36, 9, 4);
+      // shoe highlight
+      ctx.fillStyle = '#7a3a18';
+      ctx.fillRect(5 + step * 2, 36, 9, 1);
+      ctx.fillRect(14 + (1 - step) * 2, 36, 9, 1);
+    }
+
     ctx.globalAlpha = 1;
     ctx.restore();
   }
